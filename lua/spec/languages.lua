@@ -1,6 +1,7 @@
 -- Each language names its filetypes, treesitter parsers, LSP servers (with
 -- settings) and conform formatters. 0oAstro/dots installs every server and
--- formatter binary: mise for most, dnf or Xcode for clangd and clang-format.
+-- formatter binary: mise for most; dnf on Linux, Xcode and Homebrew on macOS
+-- for clangd and clang-format.
 
 local plain = {
   'toml',

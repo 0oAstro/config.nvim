@@ -48,7 +48,7 @@ Add a plugin: add a row to `lua/spec/plugins.lua` and restart with `:restart`. `
 
 Remove a plugin: delete its row, `:restart`, then `:packdel <name>`. Commit the lockfile.
 
-Update plugins: run `:packupdate`, review the diff in the tab that opens, then `:write` to accept. Commit `nvim-pack-lock.json`. On the other machine, `chezmoi update` pulls the lockfile and `:packupdate ++lockfile` moves the plugins to its revisions.
+Update plugins: run `:packupdate`, review the diff in the tab that opens, then `:write` to accept. Commit `nvim-pack-lock.json`. On the other machine, `chezmoi update --refresh-externals` pulls the lockfile and `:packupdate ++lockfile` moves the plugins to its revisions.
 
 Check the setup: `:checkhealth vim.pack vim.lsp conform render-markdown nvim-treesitter`.
 
