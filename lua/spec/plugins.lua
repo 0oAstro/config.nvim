@@ -12,8 +12,8 @@ return {
   {
     src = gh('rebelot/kanagawa.nvim'),
     setup = function()
-      require('kanagawa').setup({ compile = false })
-      vim.cmd.colorscheme('kanagawa-wave')
+      require('kanagawa').setup({ background = { dark = 'wave', light = 'lotus' } })
+      vim.cmd.colorscheme('kanagawa')
     end,
   },
   {
@@ -39,23 +39,11 @@ return {
     src = gh('neovim/nvim-lspconfig'),
   },
   {
-    src = gh('saghen/blink.cmp'),
-    version = vim.version.range('1.*'),
-    setup = function()
-      require('blink.cmp').setup({
-        keymap = { preset = 'default' },
-        completion = { documentation = { auto_show = true } },
-        signature = { enabled = true },
-        fuzzy = { implementation = 'prefer_rust_with_warning' },
-      })
-    end,
-  },
-  {
     src = gh('stevearc/conform.nvim'),
     setup = function()
       require('conform').setup({
         formatters_by_ft = languages.formatters_by_ft,
-        format_on_save = { timeout_ms = 1000, lsp_format = 'fallback' },
+        default_format_opts = { lsp_format = 'fallback' },
       })
       vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
     end,
@@ -80,6 +68,24 @@ return {
     src = gh('lewis6991/gitsigns.nvim'),
     setup = function()
       require('gitsigns').setup()
+    end,
+  },
+  {
+    src = gh('nvim-treesitter/nvim-treesitter-context'),
+    setup = function()
+      require('treesitter-context').setup({ max_lines = 3 })
+    end,
+  },
+  {
+    src = gh('MeanderingProgrammer/render-markdown.nvim'),
+    setup = function()
+      require('render-markdown').setup({ latex = { enabled = false } })
+    end,
+  },
+  {
+    src = gh('esmuellert/codediff.nvim'),
+    setup = function()
+      require('codediff').setup({})
     end,
   },
   { packadd = 'nvim.undotree' },

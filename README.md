@@ -1,8 +1,8 @@
 # config.nvim
 
-Neovim config for Neovim nightly (0.13). It uses only the built-in plugin manager (`vim.pack`), the built-in LSP client, and nine plugins.
+Neovim config for Neovim nightly (0.13). Agents write most of the code and the Markdown, so this config is built for reading and reviewing their output: navigation, diffs, rendered Markdown, and LSP. It uses the built-in plugin manager (`vim.pack`), the built-in LSP client, built-in completion, and eleven plugins.
 
-chezmoi in [0oAstro/dots](https://github.com/0oAstro/dots) clones this repo to `~/.config/nvim` and installs every binary it calls through mise.
+chezmoi in [0oAstro/dots](https://github.com/0oAstro/dots) clones this repo to `~/.config/nvim` and installs every binary it calls.
 
 ## Layout
 
@@ -21,17 +21,24 @@ The config has no `plugin/` directory, no `after/` directory, and no lazy loadin
 
 | Plugin | Job |
 | --- | --- |
-| kanagawa.nvim | Colorscheme. It matches the kanagawa tmux theme. |
-| mini.nvim | `mini.icons`, `mini.ai` text objects, and `mini.surround`. |
-| nvim-treesitter (main) | Parser install. Highlighting, folds and selection are built into Neovim. |
-| nvim-lspconfig | Server definitions only. `vim.lsp.enable` starts them. |
-| blink.cmp | Completion and signature help. |
-| conform.nvim | Format on save, with LSP formatting as the fallback. |
-| fzf-lua | Every picker. It also replaces `vim.ui.select`. |
-| oil.nvim | Directory buffers that edit the file system. |
-| gitsigns.nvim | Hunk signs, staging and blame. |
+| [kanagawa.nvim](https://github.com/rebelot/kanagawa.nvim) | Colorscheme: wave when the terminal is dark, lotus when it is light. |
+| [mini.nvim](https://github.com/nvim-mini/mini.nvim) | `mini.icons`, `mini.ai` text objects, and `mini.surround`. |
+| [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) (main) | Parser install. Highlighting, folds and selection are built into Neovim. |
+| [nvim-treesitter-context](https://github.com/nvim-treesitter/nvim-treesitter-context) | Keeps the enclosing function and class on screen while you scroll. |
+| [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig) | Server definitions only. `vim.lsp.enable` starts them. |
+| [conform.nvim](https://github.com/stevearc/conform.nvim) | Formatting on demand with `<leader>=`. Nothing formats on save. |
+| [fzf-lua](https://github.com/ibhagwan/fzf-lua) | Every picker. It also replaces `vim.ui.select`. |
+| [oil.nvim](https://github.com/stevearc/oil.nvim) | Directory buffers that edit the file system. |
+| [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim) | Hunk signs, inline hunk preview, staging and blame. |
+| [codediff.nvim](https://github.com/esmuellert/codediff.nvim) | Side-by-side review of the working tree, a revision, or the history. |
+| [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim) | Renders Markdown headings, tables, lists and code blocks in the buffer. |
 
 Neovim also ships `nvim.undotree` and `nvim.difftool`, which `plugins.lua` loads with `packadd`.
+
+Built-in features cover the rest:
+- Completion is Neovim's `'autocomplete'` with LSP items through `'omnifunc'`. `<C-y>` accepts.
+- `'autoread'` watches files, so a buffer shows an agent's edit as soon as it is written.
+- The theme follows the terminal. Neovim reads the terminal background, and a terminal that reports theme changes (DEC mode 2031) switches it live.
 
 ## Common changes
 
@@ -39,9 +46,11 @@ Add a language: add an entry to `lua/spec/languages.lua`, then add its server an
 
 Add a plugin: add a row to `lua/spec/plugins.lua` and restart with `:restart`. `vim.pack` installs it and records the revision in `nvim-pack-lock.json`.
 
+Remove a plugin: delete its row, `:restart`, then `:packdel <name>`. Commit the lockfile.
+
 Update plugins: run `:packupdate`, review the diff in the tab that opens, then `:write` to accept. Commit `nvim-pack-lock.json`. On the other machine, `chezmoi update` pulls the lockfile and `:packupdate ++lockfile` moves the plugins to its revisions.
 
-Check the setup: `:checkhealth vim.pack vim.lsp conform blink.cmp nvim-treesitter`.
+Check the setup: `:checkhealth vim.pack vim.lsp conform render-markdown nvim-treesitter`.
 
 ## Keys
 
@@ -53,6 +62,7 @@ The leader key is Space. LSP keys are Neovim's defaults: `grn` rename, `gra` cod
 | `<leader>b` `<leader>o` `<leader>h` `<leader>r` | Buffers, recent files, help, resume |
 | `<leader>s` `<leader>S` | Document and workspace symbols |
 | `<leader>d` `<leader>D` | Buffer and workspace diagnostics |
+| `<leader>gd` `<leader>gh` | Diff the working tree, browse diff history (codediff) |
 | `<leader>gs` `<leader>gl` | Git status, git log |
 | `]h` `[h` `<leader>gp` `<leader>ga` `<leader>gr` `<leader>gb` | Next and previous hunk, preview, stage, reset, blame |
 | `-` | Parent directory (oil) |

@@ -31,6 +31,10 @@ return {
     winborder = 'rounded',
     pumheight = 12,
 
+    autocomplete = true,
+    complete = 'o,.,w',
+    completeopt = 'menuone,noselect,popup,fuzzy',
+
     splitright = true,
     splitbelow = true,
     confirm = true,

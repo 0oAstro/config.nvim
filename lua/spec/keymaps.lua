@@ -29,6 +29,8 @@ return {
   { 'n', '<leader>D', fzf('diagnostics_workspace'), 'Workspace diagnostics' },
   { 'n', '<leader>gs', fzf('git_status'), 'Git status' },
   { 'n', '<leader>gl', fzf('git_commits'), 'Git log' },
+  { 'n', '<leader>gd', '<Cmd>CodeDiff<CR>', 'Diff working tree' },
+  { 'n', '<leader>gh', '<Cmd>CodeDiff history<CR>', 'Diff history' },
 
   { 'n', ']h', gitsigns('nav_hunk', 'next'), 'Next hunk' },
   { 'n', '[h', gitsigns('nav_hunk', 'prev'), 'Previous hunk' },

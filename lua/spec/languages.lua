@@ -43,13 +43,13 @@ local languages = {
     filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
     parsers = { 'javascript', 'jsdoc', 'typescript', 'tsx' },
     servers = { tsc = {}, oxlint = {} },
-    formatters = { 'prettier' },
+    formatters = { 'oxfmt' },
   },
   {
     filetypes = { 'astro' },
     parsers = { 'astro' },
     servers = { astro = {} },
-    formatters = { 'prettier' },
+    formatters = {},
   },
   {
     filetypes = { 'go', 'gomod', 'gosum' },
@@ -89,7 +89,7 @@ local languages = {
     filetypes = { 'html', 'css', 'json', 'jsonc', 'yaml' },
     parsers = { 'html', 'css', 'json', 'yaml' },
     servers = {},
-    formatters = { 'prettier' },
+    formatters = { 'oxfmt' },
   },
   { filetypes = plain, parsers = plain, servers = {}, formatters = {} },
 }
