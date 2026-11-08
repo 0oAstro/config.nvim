@@ -1,0 +1,76 @@
+-- The whole config reads top to bottom. lua/spec/ holds the data; this file
+-- applies it in one fixed order. No plugin/ directory, no lazy loading.
+
+local options = require('spec.options')
+local plugins = require('spec.plugins')
+local languages = require('spec.languages')
+local keymaps = require('spec.keymaps')
+
+for name, value in pairs(options.g) do
+  vim.g[name] = value
+end
+for name, value in pairs(options.o) do
+  vim.o[name] = value
+end
+vim.diagnostic.config(options.diagnostic)
+
+require('vim._core.ui2').enable({})
+
+local builds = {}
+local pack_specs = {}
+for _, plugin in ipairs(plugins) do
+  if plugin.src then
+    local spec = { src = plugin.src, version = plugin.version }
+    table.insert(pack_specs, spec)
+    builds[vim.fn.fnamemodify(plugin.src, ':t')] = plugin.build
+  end
+end
+
+vim.api.nvim_create_autocmd('PackChanged', {
+  desc = 'Run a plugin build after vim.pack updates it',
+  callback = function(event)
+    local build = builds[event.data.spec.name]
+    if build and event.data.kind == 'update' then
+      build()
+    end
+  end,
+})
+
+vim.pack.add(pack_specs)
+
+for _, plugin in ipairs(plugins) do
+  if plugin.packadd then
+    vim.cmd.packadd(plugin.packadd)
+  end
+  if plugin.setup then
+    plugin.setup()
+  end
+end
+
+for name, config in pairs(languages.servers) do
+  vim.lsp.config(name, config)
+end
+vim.lsp.enable(vim.tbl_keys(languages.servers))
+
+vim.api.nvim_create_autocmd('FileType', {
+  desc = 'Start treesitter for every declared language',
+  pattern = languages.filetypes,
+  callback = function(event)
+    local lang = vim.treesitter.language.get_lang(event.match)
+    if lang and vim.treesitter.language.add(lang) then
+      vim.treesitter.start(event.buf, lang)
+    end
+  end,
+})
+
+for _, map in ipairs(keymaps) do
+  local mode, lhs, rhs, desc = unpack(map)
+  vim.keymap.set(mode, lhs, rhs, { desc = desc })
+end
+
+vim.api.nvim_create_autocmd({ 'TextYankPost', 'TextPutPost' }, {
+  desc = 'Flash yanked and put text',
+  callback = function()
+    vim.hl.hl_op({ higroup = 'Visual', timeout = 200 })
+  end,
+})
