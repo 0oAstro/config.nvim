@@ -1,6 +1,6 @@
 # config.nvim
 
-Neovim config for Neovim nightly (0.13). Agents write most of the code and the Markdown, so this config is built for reading and reviewing their output: navigation, diffs, rendered Markdown, and LSP. It uses the built-in plugin manager (`vim.pack`), the built-in LSP client, built-in completion, and eleven plugins.
+Neovim config for Neovim nightly (0.13). Agents write most of the code and the Markdown, so this config is built for reading and reviewing their output: navigation, diffs, rendered Markdown, LSP, and a live link to Claude Code. It uses the built-in plugin manager (`vim.pack`) and the built-in LSP client.
 
 chezmoi in [0oAstro/dots](https://github.com/0oAstro/dots) clones this repo to `~/.config/nvim` and installs every binary it calls.
 
@@ -8,11 +8,12 @@ chezmoi in [0oAstro/dots](https://github.com/0oAstro/dots) clones this repo to `
 
 | File | Holds |
 | --- | --- |
-| `init.lua` | The only code that runs. It applies the four specs below in one fixed order. |
+| `init.lua` | The only code that runs. It applies the specs below in one fixed order. |
 | `lua/spec/options.lua` | `vim.g` and `vim.o` values and the diagnostic config. |
 | `lua/spec/plugins.lua` | Plugins in load order, each with an optional `setup` and `build`. |
 | `lua/spec/languages.lua` | One entry per language: filetypes, treesitter parsers, LSP servers, formatters. |
 | `lua/spec/keymaps.lua` | Keymaps as `{ mode, lhs, rhs, desc }` rows. |
+| `lua/spec/statusline.lua` | The statusline: one function of the window's buffer, no stored state. |
 | `nvim-pack-lock.json` | Plugin revisions, written by `vim.pack`. |
 
 The config has no `plugin/` directory, no `after/` directory, and no lazy loading. Every behavior traces back to a row in a spec.
@@ -22,21 +23,29 @@ The config has no `plugin/` directory, no `after/` directory, and no lazy loadin
 | Plugin | Job |
 | --- | --- |
 | [kanagawa.nvim](https://github.com/rebelot/kanagawa.nvim) | Colorscheme: wave when the terminal is dark, lotus when it is light. |
-| [mini.nvim](https://github.com/nvim-mini/mini.nvim) | `mini.icons`, `mini.ai` text objects, and `mini.surround`. |
+| [mini.nvim](https://github.com/nvim-mini/mini.nvim) | `mini.icons`, `mini.ai` text objects, `mini.surround`, and `mini.clue` key hints. |
 | [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) (main) | Parser install. Highlighting, folds and selection are built into Neovim. |
 | [nvim-treesitter-context](https://github.com/nvim-treesitter/nvim-treesitter-context) | Keeps the enclosing function and class on screen while you scroll. |
 | [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig) | Server definitions only. `vim.lsp.enable` starts them. |
+| [blink.cmp](https://github.com/saghen/blink.cmp) v2 (main) and [blink.lib](https://github.com/saghen/blink.lib) | Completion and signature help. The Rust matcher builds with cargo on install. |
 | [conform.nvim](https://github.com/stevearc/conform.nvim) | Formatting on demand with `<leader>=`. Nothing formats on save. |
-| [fzf-lua](https://github.com/ibhagwan/fzf-lua) | Every picker. It also replaces `vim.ui.select`. |
+| [fff](https://github.com/dmtrKovalenko/fff) | File search and grep: typo-resistant, ranked by frecency and git status, with a background index. |
+| [fzf-lua](https://github.com/ibhagwan/fzf-lua) | Every other picker: buffers, help, symbols, diagnostics, git log, keymaps, and `vim.ui.select`. |
+| [snacks.nvim](https://github.com/folke/snacks.nvim) | File tree (explorer), indent guides, LSP reference highlight, big-file guard, `vim.ui.input`, open on GitHub. Its picker serves only the explorer. |
 | [oil.nvim](https://github.com/stevearc/oil.nvim) | Directory buffers that edit the file system. |
+| [harpoon](https://github.com/ThePrimeagen/harpoon) (harpoon2) | A short list of marked files, one key each. Needs [plenary.nvim](https://github.com/nvim-lua/plenary.nvim). |
 | [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim) | Hunk signs, inline hunk preview, staging and blame. |
+| [neogit](https://github.com/NeogitOrg/neogit) | Git status, staging, commits, branches and log, with codediff for diffs. |
 | [codediff.nvim](https://github.com/esmuellert/codediff.nvim) | Side-by-side review of the working tree, a revision, or the history. |
+| [trouble.nvim](https://github.com/folke/trouble.nvim) | Lists for diagnostics, references, symbols and quickfix. |
+| [claudecode.nvim](https://github.com/coder/claudecode.nvim) | The Claude Code IDE protocol. Claude Code runs in its own tmux pane; `/ide` connects it, and its edits open here as diffs to accept or deny. |
 | [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim) | Renders Markdown headings, tables, lists and code blocks in the buffer. |
 
 Neovim also ships `nvim.undotree` and `nvim.difftool`, which `plugins.lua` loads with `packadd`.
 
+The statusline is `lua/spec/statusline.lua`, in the style of the Pure zsh prompt that dots configures through p10k: `❮` in normal mode and `❯` in insert (red when the buffer has errors), `user@host` over SSH only, the path, the git branch with `*` for unstaged hunks, the virtualenv, then error and warning counts and the cursor position.
+
 Built-in features cover the rest:
-- Completion is Neovim's `'autocomplete'` with LSP items through `'omnifunc'`. `<C-y>` accepts.
 - `'autoread'` watches files, so a buffer shows an agent's edit as soon as it is written.
 - The theme follows the terminal. Neovim reads the terminal background, and a terminal that reports theme changes (DEC mode 2031) switches it live.
 
@@ -50,7 +59,7 @@ Remove a plugin: delete its row, `:restart`, then `:packdel <name>`. Commit the 
 
 Update plugins: run `:packupdate`, review the diff in the tab that opens, then `:write` to accept. Commit `nvim-pack-lock.json`. On the other machine, `chezmoi update --refresh-externals` pulls the lockfile and `:packupdate ++lockfile` moves the plugins to its revisions.
 
-Check the setup: `:checkhealth vim.pack vim.lsp conform render-markdown nvim-treesitter`.
+Check the setup: `:checkhealth vim.pack vim.lsp blink.cmp conform fff claudecode render-markdown nvim-treesitter`.
 
 ## Keys
 
@@ -58,15 +67,20 @@ The leader key is Space. LSP keys are Neovim's defaults: `grn` rename, `gra` cod
 
 | Key | Action |
 | --- | --- |
-| `<leader>f` `<leader>/` `<leader>*` | Files, grep, grep word |
-| `<leader>b` `<leader>o` `<leader>h` `<leader>r` | Buffers, recent files, help, resume |
+| `<leader>f` `<leader>/` `<leader>*` | Find files, grep, grep word or selection (fff) |
+| `<leader>b` `<leader>o` `<leader>h` `<leader>r` | Buffers, recent files, help, resume (fzf-lua) |
 | `<leader>s` `<leader>S` | Document and workspace symbols |
 | `<leader>d` `<leader>D` | Buffer and workspace diagnostics |
-| `<leader>gd` `<leader>gh` | Diff the working tree, browse diff history (codediff) |
-| `<leader>gs` `<leader>gl` | Git status, git log |
+| `<leader>e` `-` | File tree (snacks), parent directory (oil) |
+| `<leader>ma` `<leader>mm` `<leader>1`..`<leader>4` | Mark a file, list marks, jump to a mark (harpoon) |
+| `<leader>gg` `<leader>gd` `<leader>gh` | Neogit, diff the working tree, diff history |
+| `<leader>gs` `<leader>gl` `<leader>go` | Git status, git log, open on GitHub |
 | `]h` `[h` `<leader>gp` `<leader>ga` `<leader>gr` `<leader>gb` | Next and previous hunk, preview, stage, reset, blame |
-| `-` | Parent directory (oil) |
+| `<leader>xx` `<leader>xb` `<leader>xs` `<leader>xr` `<leader>xq` | Trouble: diagnostics, buffer diagnostics, symbols, LSP, quickfix |
+| `<leader>cb` `<leader>cs` `<leader>ca` `<leader>cd` `<leader>cS` | Claude: add buffer, send selection, accept diff, deny diff, status |
 | `<leader>u` `<leader>=` `<leader>i` | Undo tree, format, inlay hints |
+
+To connect Claude Code, run `claude --ide` in a tmux pane in the same project, or `/ide` inside a running session.
 
 ## C++ for competitive programming
 

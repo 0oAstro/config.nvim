@@ -27,10 +27,11 @@ for _, plugin in ipairs(plugins) do
 end
 
 vim.api.nvim_create_autocmd('PackChanged', {
-  desc = 'Run a plugin build after vim.pack updates it',
+  desc = 'Run a plugin build after vim.pack installs or updates it',
   callback = function(event)
-    local build = builds[event.data.spec.name]
-    if build and event.data.kind == 'update' then
+    local name, kind = event.data.spec.name, event.data.kind
+    local build = builds[name]
+    if build and (kind == 'install' or kind == 'update') then
       build()
     end
   end,
@@ -72,5 +73,12 @@ vim.api.nvim_create_autocmd({ 'TextYankPost', 'TextPutPost' }, {
   desc = 'Flash yanked and put text',
   callback = function()
     vim.hl.hl_op({ higroup = 'Visual', timeout = 200 })
+  end,
+})
+
+vim.api.nvim_create_autocmd({ 'ModeChanged', 'DiagnosticChanged' }, {
+  desc = 'Redraw the statusline for its mode glyph and diagnostic counts',
+  callback = function()
+    vim.cmd.redrawstatus()
   end,
 })

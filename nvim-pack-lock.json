@@ -1,5 +1,18 @@
 {
   "plugins": {
+    "blink.cmp": {
+      "rev": "7b31e1b6497be70f620bbad83a789929248697ac",
+      "src": "https://github.com/saghen/blink.cmp",
+      "version": "'main'"
+    },
+    "blink.lib": {
+      "rev": "fd9a48ebbe6ec30d5dfcc5b42c243941ccdca1aa",
+      "src": "https://github.com/saghen/blink.lib"
+    },
+    "claudecode.nvim": {
+      "rev": "af04fbf9c27c5c06b4d1ff022b551aa94e1df4aa",
+      "src": "https://github.com/coder/claudecode.nvim"
+    },
     "codediff.nvim": {
       "rev": "09d9ebef2cc5a5c04db7a349cd6c61bdf84ecc8e",
       "src": "https://github.com/esmuellert/codediff.nvim"
@@ -7,6 +20,10 @@
     "conform.nvim": {
       "rev": "016802de402556da54c36bd7359b441266b01cdd",
       "src": "https://github.com/stevearc/conform.nvim"
+    },
+    "fff": {
+      "rev": "5d21e4bbdf33a09f58975636208e30747bc8d918",
+      "src": "https://github.com/dmtrKovalenko/fff"
     },
     "fzf-lua": {
       "rev": "22f0bbd3140a8a3b34fec75e5a640513ca6d4ce3",
@@ -16,6 +33,11 @@
       "rev": "ef707fb93301a9b856f36eae4c8f56f5b988a794",
       "src": "https://github.com/lewis6991/gitsigns.nvim"
     },
+    "harpoon": {
+      "rev": "87b1a3506211538f460786c23f98ec63ad9af4e5",
+      "src": "https://github.com/ThePrimeagen/harpoon",
+      "version": "'harpoon2'"
+    },
     "kanagawa.nvim": {
       "rev": "bb85e4bfc8d89b0e62c8fa53ccdd13d12e2f77b3",
       "src": "https://github.com/rebelot/kanagawa.nvim"
@@ -23,6 +45,10 @@
     "mini.nvim": {
       "rev": "f9ac12d7cbd2563cfc2cce9a8152fc8df2ad0d6f",
       "src": "https://github.com/nvim-mini/mini.nvim"
+    },
+    "neogit": {
+      "rev": "ba2f33b64b996ff5530c4c45a3c432fb63aaa95b",
+      "src": "https://github.com/NeogitOrg/neogit"
     },
     "nvim-lspconfig": {
       "rev": "993d048db0d83d8e8ba3f9cb376456321acdcce3",
@@ -41,9 +67,21 @@
       "rev": "d3733d933833a0e59b813ecec99341527adf0c28",
       "src": "https://github.com/stevearc/oil.nvim"
     },
+    "plenary.nvim": {
+      "rev": "74b06c6c75e4eeb3108ec01852001636d85a932b",
+      "src": "https://github.com/nvim-lua/plenary.nvim"
+    },
     "render-markdown.nvim": {
       "rev": "9c235bedc4f96145e63fcad5b78cd78bce8822c4",
       "src": "https://github.com/MeanderingProgrammer/render-markdown.nvim"
+    },
+    "snacks.nvim": {
+      "rev": "882c996cf28183f4d63640de0b4c02ec886d01f2",
+      "src": "https://github.com/folke/snacks.nvim"
+    },
+    "trouble.nvim": {
+      "rev": "bd67efe408d4816e25e8491cc5ad4088e708a69a",
+      "src": "https://github.com/folke/trouble.nvim"
     }
   }
 }

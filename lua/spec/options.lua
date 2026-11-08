@@ -31,9 +31,8 @@ return {
     winborder = 'rounded',
     pumheight = 12,
 
-    autocomplete = true,
-    complete = 'o,.,w',
-    completeopt = 'menuone,noselect,popup,fuzzy',
+    statusline = "%!v:lua.require'spec.statusline'()",
+    showmode = false,
 
     splitright = true,
     splitbelow = true,
