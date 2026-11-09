@@ -74,10 +74,3 @@ vim.api.nvim_create_autocmd({ 'TextYankPost', 'TextPutPost' }, {
     vim.hl.hl_op({ higroup = 'Visual', timeout = 200 })
   end,
 })
-
-vim.api.nvim_create_autocmd({ 'ModeChanged', 'DiagnosticChanged' }, {
-  desc = 'Redraw the statusline for its mode glyph and diagnostic counts',
-  callback = function()
-    vim.cmd.redrawstatus()
-  end,
-})

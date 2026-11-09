@@ -1,11 +1,11 @@
-local host = require('spec.host')
 local osc52 = require('vim.ui.clipboard.osc52')
 
 local function paste_unnamed()
   return { vim.fn.getreg('"', 1, true), vim.fn.getregtype('"') }
 end
 
--- A remote host has no desktop clipboard. Copies travel to the Mac as OSC 52;
+-- Linux hosts are servers the Mac reaches through Rex or SSH, with no desktop
+-- clipboard. A Rex block there has no SSH variables, so the OS decides. Copies travel to the Mac as OSC 52;
 -- pastes read the unnamed register, since a terminal may not answer OSC 52
 -- reads.
 local terminal_clipboard = {
@@ -19,7 +19,7 @@ return {
     mapleader = ' ',
     maplocalleader = ' ',
     loaded_nvim_dir_plugin = 1,
-    clipboard = host.remote and terminal_clipboard or nil,
+    clipboard = vim.fn.has('linux') == 1 and terminal_clipboard or nil,
   },
 
   o = {
@@ -35,7 +35,6 @@ return {
     winborder = 'rounded',
     pumheight = 12,
 
-    statusline = "%!v:lua.require'spec.statusline'()",
     showmode = false,
 
     splitright = true,

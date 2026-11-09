@@ -13,8 +13,6 @@ chezmoi in [0oAstro/dots](https://github.com/0oAstro/dots) clones this repo to `
 | `lua/spec/plugins.lua` | Plugins in load order, each with an optional `setup` and `build`. |
 | `lua/spec/languages.lua` | One entry per language: filetypes, treesitter parsers, LSP servers, formatters. |
 | `lua/spec/keymaps.lua` | Keymaps as `{ mode, lhs, rhs, desc }` rows. |
-| `lua/spec/host.lua` | One fact: whether this host is remote (Linux, or an SSH session). The clipboard and the statusline read it. |
-| `lua/spec/statusline.lua` | The statusline: one function of the window's buffer, no stored state. |
 | `nvim-pack-lock.json` | Plugin revisions, written by `vim.pack`. |
 
 The config has no `plugin/` directory, no `after/` directory, and no lazy loading. Every behavior traces back to a row in a spec.
@@ -24,7 +22,7 @@ The config has no `plugin/` directory, no `after/` directory, and no lazy loadin
 | Plugin | Job |
 | --- | --- |
 | [kanagawa.nvim](https://github.com/rebelot/kanagawa.nvim) | Colorscheme: wave when the terminal is dark, lotus when it is light. |
-| [mini.nvim](https://github.com/nvim-mini/mini.nvim) | `mini.icons`, `mini.ai` text objects, `mini.surround`, and `mini.clue` key hints. |
+| [mini.nvim](https://github.com/nvim-mini/mini.nvim) | `mini.icons`, `mini.ai` text objects, `mini.surround`, `mini.clue` key hints, and `mini.statusline`. |
 | [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) (main) | Parser install. Highlighting, folds and selection are built into Neovim. |
 | [nvim-treesitter-context](https://github.com/nvim-treesitter/nvim-treesitter-context) | Keeps the enclosing function and class on screen while you scroll. |
 | [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig) | Server definitions only. `vim.lsp.enable` starts them. |
@@ -44,7 +42,7 @@ The config has no `plugin/` directory, no `after/` directory, and no lazy loadin
 
 Neovim also ships `nvim.undotree` and `nvim.difftool`, which `plugins.lua` loads with `packadd`.
 
-The statusline is `lua/spec/statusline.lua`, in the style of the Pure zsh prompt that dots configures through p10k: `❮` in normal mode and `❯` in insert (red when the buffer has errors), `user@host` on a remote host (any Linux server, since Rex blocks there carry no SSH variables), the path, the git branch with `*` for unstaged hunks, the virtualenv, then error and warning counts and the cursor position.
+The statusline is `mini.statusline` with its defaults: a mode block colored by mode, then git branch, diff counts, diagnostics and LSP clients, the file name, file info, and the cursor position. Sections collapse as the window narrows.
 
 Built-in features cover the rest:
 - `'autoread'` watches files, so a buffer shows an agent's edit as soon as it is written.

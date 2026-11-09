@@ -26,6 +26,7 @@ return {
       icons.mock_nvim_web_devicons()
       require('mini.ai').setup()
       require('mini.surround').setup()
+      require('mini.statusline').setup()
 
       local clue = require('mini.clue')
       clue.setup({
