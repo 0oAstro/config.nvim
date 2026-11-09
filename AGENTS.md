@@ -10,5 +10,6 @@ This repo is a Neovim nightly (0.13) config for reading and reviewing agent-writ
 - A plugin with a native part declares a `build` in `plugins.lua`. The build runs before the plugin loads, so it loads what it needs with `packadd`.
 - `nvim-pack-lock.json` is written by `vim.pack`. Do not edit it by hand. Commit it with every plugin change.
 - Check Neovim APIs against `:help news` and the runtime docs of the installed nightly, not memory. 0.13 is unreleased and changes weekly.
-- After a change, start `nvim --headless` on a file of each touched language and confirm that treesitter is active, the LSP clients attach, and `:messages` is empty. Then run `:checkhealth vim.pack vim.lsp blink.cmp conform fff claudecode render-markdown nvim-treesitter`. snacks, neogit and trouble report errors for modules this config does not enable or for a missing healthcheck; those are expected.
+- After a change, start `nvim --headless` on a file of each touched language and confirm that treesitter is active, the LSP clients attach, and `:messages` is empty. Then run `:checkhealth vim.pack vim.lsp blink.cmp conform fff octo render-markdown nvim-treesitter`. snacks, neogit and trouble report errors for modules this config does not enable or for a missing healthcheck; those are expected.
+- Alt-h/j/k/l navigation spans two repos: `navigate` in `lua/spec/keymaps.lua` and the `focus_*_or_neovim` actions in dots' `home/private_dot_config/rex/init.lua.tmpl`. Change them together.
 - A change is not done until README.md matches it.

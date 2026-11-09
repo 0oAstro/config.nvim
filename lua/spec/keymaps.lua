@@ -21,6 +21,25 @@ local function harpoon_select(index)
   end
 end
 
+-- Alt-h/j/k/l moves to the Neovim window that way, or past Neovim's edge to
+-- the Rex block that way. Rex sends these keys into a block that runs Neovim
+-- (dots: rex/init.lua), so the same keys work in both directions.
+local function navigate(letter, direction)
+  return function()
+    local before = vim.api.nvim_get_current_win()
+    vim.cmd.wincmd(letter)
+    if vim.api.nvim_get_current_win() == before and vim.env.REX_BIN_DIR then
+      vim.system({ vim.env.REX_BIN_DIR .. '/rex', 'focus', direction })
+    end
+  end
+end
+
+local function flash(action)
+  return function()
+    require('flash')[action]()
+  end
+end
+
 local function gitsigns(action, ...)
   local args = { ... }
   return function()
@@ -100,11 +119,35 @@ return {
   { 'n', '<leader>xr', '<Cmd>Trouble lsp toggle<CR>', 'LSP references and definitions' },
   { 'n', '<leader>xq', '<Cmd>Trouble qflist toggle<CR>', 'Quickfix list' },
 
-  { 'n', '<leader>cb', '<Cmd>ClaudeCodeAdd %<CR>', 'Add buffer to Claude' },
-  { 'x', '<leader>cs', '<Cmd>ClaudeCodeSend<CR>', 'Send selection to Claude' },
-  { 'n', '<leader>ca', '<Cmd>ClaudeCodeDiffAccept<CR>', 'Accept Claude diff' },
-  { 'n', '<leader>cd', '<Cmd>ClaudeCodeDiffDeny<CR>', 'Deny Claude diff' },
-  { 'n', '<leader>cS', '<Cmd>ClaudeCodeStatus<CR>', 'Claude connection status' },
+  { 'n', '<leader>gP', '<Cmd>Octo pr list<CR>', 'GitHub pull requests' },
+  { 'n', '<leader>gI', '<Cmd>Octo issue list<CR>', 'GitHub issues' },
+  { 'n', '<leader>gR', '<Cmd>Octo review<CR>', 'Review the current pull request' },
+
+  { 'n', '<M-h>', navigate('h', 'left'), 'Window or Rex block left' },
+  { 'n', '<M-j>', navigate('j', 'down'), 'Window or Rex block below' },
+  { 'n', '<M-k>', navigate('k', 'up'), 'Window or Rex block above' },
+  { 'n', '<M-l>', navigate('l', 'right'), 'Window or Rex block right' },
+
+  { { 'n', 'x', 'o' }, 's', flash('jump'), 'Jump (flash)' },
+  { { 'n', 'x', 'o' }, 'S', flash('treesitter'), 'Select a treesitter node (flash)' },
+
+  {
+    'n',
+    ']t',
+    function()
+      require('todo-comments').jump_next()
+    end,
+    'Next TODO',
+  },
+  {
+    'n',
+    '[t',
+    function()
+      require('todo-comments').jump_prev()
+    end,
+    'Previous TODO',
+  },
+  { 'n', '<leader>xt', '<Cmd>Trouble todo toggle<CR>', 'TODO list' },
 
   { 'n', '-', '<Cmd>Oil<CR>', 'Parent directory' },
   { 'n', '<leader>u', '<Cmd>Undotree<CR>', 'Undo tree' },

@@ -9,10 +9,6 @@
       "rev": "fd9a48ebbe6ec30d5dfcc5b42c243941ccdca1aa",
       "src": "https://github.com/saghen/blink.lib"
     },
-    "claudecode.nvim": {
-      "rev": "af04fbf9c27c5c06b4d1ff022b551aa94e1df4aa",
-      "src": "https://github.com/coder/claudecode.nvim"
-    },
     "codediff.nvim": {
       "rev": "09d9ebef2cc5a5c04db7a349cd6c61bdf84ecc8e",
       "src": "https://github.com/esmuellert/codediff.nvim"
@@ -24,6 +20,10 @@
     "fff": {
       "rev": "5d21e4bbdf33a09f58975636208e30747bc8d918",
       "src": "https://github.com/dmtrKovalenko/fff"
+    },
+    "flash.nvim": {
+      "rev": "5f0f270fdc7c5b0c21d903ee85b9cb06f2ac636a",
+      "src": "https://github.com/folke/flash.nvim"
     },
     "fzf-lua": {
       "rev": "22f0bbd3140a8a3b34fec75e5a640513ca6d4ce3",
@@ -63,6 +63,10 @@
       "rev": "8decd73460d26ef0a0befb745d022dd1fc2c38b8",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter-context"
     },
+    "octo.nvim": {
+      "rev": "419e67aee457406423e7cb4fc41d721ecda61bcd",
+      "src": "https://github.com/pwntester/octo.nvim"
+    },
     "oil.nvim": {
       "rev": "d3733d933833a0e59b813ecec99341527adf0c28",
       "src": "https://github.com/stevearc/oil.nvim"
@@ -71,6 +75,10 @@
       "rev": "74b06c6c75e4eeb3108ec01852001636d85a932b",
       "src": "https://github.com/nvim-lua/plenary.nvim"
     },
+    "quicker.nvim": {
+      "rev": "4a6883cb13fe097a20a046eb55f6dffd239276e3",
+      "src": "https://github.com/stevearc/quicker.nvim"
+    },
     "render-markdown.nvim": {
       "rev": "9c235bedc4f96145e63fcad5b78cd78bce8822c4",
       "src": "https://github.com/MeanderingProgrammer/render-markdown.nvim"
@@ -78,6 +86,10 @@
     "snacks.nvim": {
       "rev": "882c996cf28183f4d63640de0b4c02ec886d01f2",
       "src": "https://github.com/folke/snacks.nvim"
+    },
+    "todo-comments.nvim": {
+      "rev": "31e3c38ce9b29781e4422fc0322eb0a21f4e8668",
+      "src": "https://github.com/folke/todo-comments.nvim"
     },
     "trouble.nvim": {
       "rev": "bd67efe408d4816e25e8491cc5ad4088e708a69a",

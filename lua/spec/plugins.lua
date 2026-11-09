@@ -25,7 +25,17 @@ return {
       icons.setup()
       icons.mock_nvim_web_devicons()
       require('mini.ai').setup()
-      require('mini.surround').setup()
+      require('mini.surround').setup({
+        mappings = {
+          add = 'gsa',
+          delete = 'gsd',
+          find = 'gsf',
+          find_left = 'gsF',
+          highlight = 'gsh',
+          replace = 'gsr',
+          update_n_lines = 'gsn',
+        },
+      })
       require('mini.statusline').setup()
 
       local clue = require('mini.clue')
@@ -50,11 +60,10 @@ return {
           clue.gen_clues.windows(),
           clue.gen_clues.marks(),
           clue.gen_clues.registers(),
-          { mode = 'n', keys = '<Leader>c', desc = '+claude' },
-          { mode = 'x', keys = '<Leader>c', desc = '+claude' },
           { mode = 'n', keys = '<Leader>g', desc = '+git' },
           { mode = 'n', keys = '<Leader>m', desc = '+marks (harpoon)' },
           { mode = 'n', keys = '<Leader>x', desc = '+trouble' },
+          { mode = 'n', keys = 'gs', desc = '+surround' },
         },
         window = { delay = 300 },
       })
@@ -111,6 +120,55 @@ return {
     setup = function()
       require('snacks').setup({
         bigfile = { enabled = true },
+        dashboard = {
+          enabled = true,
+          preset = {
+            keys = {
+              {
+                key = 'f',
+                desc = 'Find file',
+                action = function()
+                  require('fff').find_files()
+                end,
+              },
+              {
+                key = '/',
+                desc = 'Grep',
+                action = function()
+                  require('fff').live_grep()
+                end,
+              },
+              {
+                key = 'o',
+                desc = 'Recent files',
+                action = function()
+                  require('fzf-lua').oldfiles()
+                end,
+              },
+              { key = 'g', desc = 'Neogit', action = ':Neogit' },
+              { key = 'd', desc = 'Diff working tree', action = ':CodeDiff' },
+              {
+                key = 'e',
+                desc = 'File tree',
+                action = function()
+                  require('snacks').explorer()
+                end,
+              },
+              { key = 'q', desc = 'Quit', action = ':qa' },
+            },
+          },
+          sections = {
+            { section = 'header' },
+            { section = 'keys', gap = 1, padding = 1 },
+            {
+              title = 'Recent in this directory',
+              section = 'recent_files',
+              cwd = true,
+              limit = 8,
+              padding = 1,
+            },
+          },
+        },
         indent = { enabled = true },
         words = { enabled = true },
         input = { enabled = true },
@@ -180,9 +238,27 @@ return {
     end,
   },
   {
-    src = gh('coder/claudecode.nvim'),
+    src = gh('pwntester/octo.nvim'),
     setup = function()
-      require('claudecode').setup({ terminal = { provider = 'none' } })
+      require('octo').setup({ picker = 'fzf-lua' })
+    end,
+  },
+  {
+    src = gh('folke/todo-comments.nvim'),
+    setup = function()
+      require('todo-comments').setup({})
+    end,
+  },
+  {
+    src = gh('folke/flash.nvim'),
+    setup = function()
+      require('flash').setup({})
+    end,
+  },
+  {
+    src = gh('stevearc/quicker.nvim'),
+    setup = function()
+      require('quicker').setup({})
     end,
   },
   {

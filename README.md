@@ -1,6 +1,6 @@
 # config.nvim
 
-Neovim config for Neovim nightly (0.13). Agents write most of the code and the Markdown, so this config is built for reading and reviewing their output: navigation, diffs, rendered Markdown, LSP, and a live link to Claude Code. It uses the built-in plugin manager (`vim.pack`) and the built-in LSP client.
+Neovim config for Neovim nightly (0.13). Agents write most of the code and the Markdown, so this config is built for reading and reviewing their output: navigation, diffs, PR review, rendered Markdown, and LSP. Agents run beside it in Rex blocks, and Alt-h/j/k/l moves between Neovim windows and Rex blocks alike. It uses the built-in plugin manager (`vim.pack`) and the built-in LSP client.
 
 chezmoi in [0oAstro/dots](https://github.com/0oAstro/dots) clones this repo to `~/.config/nvim` and installs every binary it calls.
 
@@ -22,7 +22,7 @@ The config has no `plugin/` directory, no `after/` directory, and no lazy loadin
 | Plugin | Job |
 | --- | --- |
 | [kanagawa.nvim](https://github.com/rebelot/kanagawa.nvim) | Colorscheme: wave when the terminal is dark, lotus when it is light. |
-| [mini.nvim](https://github.com/nvim-mini/mini.nvim) | `mini.icons`, `mini.ai` text objects, `mini.surround`, `mini.clue` key hints, and `mini.statusline`. |
+| [mini.nvim](https://github.com/nvim-mini/mini.nvim) | `mini.icons`, `mini.ai` text objects, `mini.surround` (on `gs`, since flash owns `s`), `mini.clue` key hints, and `mini.statusline`. |
 | [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) (main) | Parser install. Highlighting, folds and selection are built into Neovim. |
 | [nvim-treesitter-context](https://github.com/nvim-treesitter/nvim-treesitter-context) | Keeps the enclosing function and class on screen while you scroll. |
 | [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig) | Server definitions only. `vim.lsp.enable` starts them. |
@@ -30,14 +30,17 @@ The config has no `plugin/` directory, no `after/` directory, and no lazy loadin
 | [conform.nvim](https://github.com/stevearc/conform.nvim) | Formatting on demand with `<leader>=`. Nothing formats on save. |
 | [fff](https://github.com/dmtrKovalenko/fff) | File search and grep: typo-resistant, ranked by frecency and git status, with a background index. |
 | [fzf-lua](https://github.com/ibhagwan/fzf-lua) | Every other picker: buffers, help, symbols, diagnostics, git log, keymaps, and `vim.ui.select`. |
-| [snacks.nvim](https://github.com/folke/snacks.nvim) | File tree (explorer), indent guides, LSP reference highlight, big-file guard, `vim.ui.input`, open on GitHub. Its picker serves only the explorer. |
+| [snacks.nvim](https://github.com/folke/snacks.nvim) | Start screen, file tree (explorer), indent guides, LSP reference highlight, big-file guard, `vim.ui.input`, open on GitHub. Its picker serves only the explorer. |
 | [oil.nvim](https://github.com/stevearc/oil.nvim) | Directory buffers that edit the file system. |
 | [harpoon](https://github.com/ThePrimeagen/harpoon) (harpoon2) | A short list of marked files, one key each. Needs [plenary.nvim](https://github.com/nvim-lua/plenary.nvim). |
 | [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim) | Hunk signs, inline hunk preview, staging and blame. |
 | [neogit](https://github.com/NeogitOrg/neogit) | Git status, staging, commits, branches and log, with codediff for diffs. |
 | [codediff.nvim](https://github.com/esmuellert/codediff.nvim) | Side-by-side review of the working tree, a revision, or the history. |
 | [trouble.nvim](https://github.com/folke/trouble.nvim) | Lists for diagnostics, references, symbols and quickfix. |
-| [claudecode.nvim](https://github.com/coder/claudecode.nvim) | The Claude Code IDE protocol. Claude Code runs in its own Rex block; `/ide` connects it, and its edits open here as diffs to accept or deny. |
+| [octo.nvim](https://github.com/pwntester/octo.nvim) | GitHub pull requests and issues: read the diff, comment, review, approve. Uses the `gh` login. |
+| [todo-comments.nvim](https://github.com/folke/todo-comments.nvim) | Highlights and lists TODO, FIXME, HACK and NOTE comments. |
+| [flash.nvim](https://github.com/folke/flash.nvim) | Jump to any visible spot with `s` and a label; `S` selects a treesitter node. |
+| [quicker.nvim](https://github.com/stevearc/quicker.nvim) | A cleaner quickfix list that you can edit to change the matched lines. |
 | [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim) | Renders Markdown headings, tables, lists and code blocks in the buffer. |
 
 Neovim also ships `nvim.undotree` and `nvim.difftool`, which `plugins.lua` loads with `packadd`.
@@ -59,7 +62,7 @@ Remove a plugin: delete its row, `:restart`, then `:packdel <name>`. Commit the 
 
 Update plugins: run `:packupdate`, review the diff in the tab that opens, then `:write` to accept. Commit `nvim-pack-lock.json`. On the other machine, `chezmoi update --refresh-externals` pulls the lockfile and `:packupdate ++lockfile` moves the plugins to its revisions.
 
-Check the setup: `:checkhealth vim.pack vim.lsp blink.cmp conform fff claudecode render-markdown nvim-treesitter`.
+Check the setup: `:checkhealth vim.pack vim.lsp blink.cmp conform fff octo render-markdown nvim-treesitter`.
 
 ## Keys
 
@@ -77,10 +80,14 @@ The leader key is Space. LSP keys are Neovim's defaults: `grn` rename, `gra` cod
 | `<leader>gs` `<leader>gl` `<leader>go` | Git status, git log, open on GitHub |
 | `]h` `[h` `<leader>gp` `<leader>ga` `<leader>gr` `<leader>gb` | Next and previous hunk, preview, stage, reset, blame |
 | `<leader>xx` `<leader>xb` `<leader>xs` `<leader>xr` `<leader>xq` | Trouble: diagnostics, buffer diagnostics, symbols, LSP, quickfix |
-| `<leader>cb` `<leader>cs` `<leader>ca` `<leader>cd` `<leader>cS` | Claude: add buffer, send selection, accept diff, deny diff, status |
+| `<M-h>` `<M-j>` `<M-k>` `<M-l>` | Move to the Neovim window that way, or on to the Rex block past Neovim's edge |
+| `s` `S` | Flash jump, flash treesitter selection |
+| `]t` `[t` `<leader>xt` | Next and previous TODO, TODO list |
+| `<leader>gP` `<leader>gI` `<leader>gR` | GitHub pull requests, issues, review the current PR (octo) |
+| `gsa` `gsd` `gsr` | Add, delete, replace surrounding characters |
 | `<leader>u` `<leader>=` `<leader>i` | Undo tree, format, inlay hints |
 
-To connect Claude Code, run `claude --ide` in a Rex block in the same project, or `/ide` inside a running session.
+Alt-h/j/k/l works across Rex because dots binds the same keys in Rex's `init.lua`. A Rex block running Neovim gets the key; any other block moves Rex focus. Opening Neovim with no file shows the start screen: find, grep, recent files, Neogit, diff and the file tree, one key each.
 
 ## C++ for competitive programming
 
