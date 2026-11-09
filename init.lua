@@ -65,8 +65,7 @@ vim.api.nvim_create_autocmd('FileType', {
 })
 
 for _, map in ipairs(keymaps) do
-  local mode, lhs, rhs, desc = unpack(map)
-  vim.keymap.set(mode, lhs, rhs, { desc = desc })
+  vim.keymap.set(map[1], map[2], map[3], { desc = map[4] })
 end
 
 vim.api.nvim_create_autocmd({ 'TextYankPost', 'TextPutPost' }, {

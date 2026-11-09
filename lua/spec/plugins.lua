@@ -21,8 +21,9 @@ return {
   {
     src = gh('nvim-mini/mini.nvim'),
     setup = function()
-      require('mini.icons').setup()
-      MiniIcons.mock_nvim_web_devicons()
+      local icons = require('mini.icons')
+      icons.setup()
+      icons.mock_nvim_web_devicons()
       require('mini.ai').setup()
       require('mini.surround').setup()
 

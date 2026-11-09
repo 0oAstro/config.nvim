@@ -1,6 +1,8 @@
 -- Keymaps beyond Neovim's defaults. LSP keys are the built-in ones
 -- (grn, gra, grr, gri, grt, gO, K) and stay unmapped here.
 
+---@alias KeymapRow { [1]: string|string[], [2]: string, [3]: string|function, [4]: string }
+
 local function fzf(picker)
   return function()
     require('fzf-lua')[picker]()
@@ -26,6 +28,7 @@ local function gitsigns(action, ...)
   end
 end
 
+---@type KeymapRow[]
 return {
   { 'n', '<leader>f', fff('find_files'), 'Find files' },
   { 'n', '<leader>/', fff('live_grep'), 'Grep project' },
@@ -55,7 +58,7 @@ return {
     { 'n', 'x' },
     '<leader>go',
     function()
-      Snacks.gitbrowse()
+      require('snacks').gitbrowse()
     end,
     'Open on GitHub',
   },
@@ -64,7 +67,7 @@ return {
     'n',
     '<leader>e',
     function()
-      Snacks.explorer()
+      require('snacks').explorer()
     end,
     'File tree',
   },

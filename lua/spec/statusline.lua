@@ -1,9 +1,11 @@
 -- A statusline in the style of the Pure zsh prompt (and the p10k-pure config
 -- in dots): no separators or background blocks, colored text only.
--- user@host (over SSH only), path, git branch with `*` when the file has
+-- user@host (on a remote host only, as Pure shows it over SSH), path, git branch with `*` when the file has
 -- unstaged hunks, then the virtualenv. The mode glyph comes first, the way
 -- Pure shows ❯ in insert and ❮ in vi command mode; it turns red when the
 -- buffer has errors, as Pure's ❯ does after a failed command.
+
+local host = require('spec.host')
 
 local function paint(group, text)
   return '%#' .. group .. '#' .. text .. '%*'
@@ -27,7 +29,7 @@ local function mode_glyph(buf)
 end
 
 local function context()
-  if not vim.env.SSH_CONNECTION then
+  if not host.remote then
     return nil
   end
   return paint('Comment', vim.env.USER .. '@' .. vim.uv.os_gethostname())
@@ -58,14 +60,13 @@ end
 local function diagnostics(buf)
   local parts = {}
   local severities = {
-    { vim.diagnostic.severity.ERROR, 'DiagnosticError', 'E' },
-    { vim.diagnostic.severity.WARN, 'DiagnosticWarn', 'W' },
+    { severity = vim.diagnostic.severity.ERROR, group = 'DiagnosticError', letter = 'E' },
+    { severity = vim.diagnostic.severity.WARN, group = 'DiagnosticWarn', letter = 'W' },
   }
   for _, row in ipairs(severities) do
-    local severity, group, letter = unpack(row)
-    local count = #vim.diagnostic.get(buf, { severity = severity })
+    local count = #vim.diagnostic.get(buf, { severity = row.severity })
     if count > 0 then
-      table.insert(parts, paint(group, letter .. count))
+      table.insert(parts, paint(row.group, row.letter .. count))
     end
   end
   return #parts > 0 and table.concat(parts, ' ') or nil

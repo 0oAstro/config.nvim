@@ -1,10 +1,14 @@
+local host = require('spec.host')
 local osc52 = require('vim.ui.clipboard.osc52')
 
 local function paste_unnamed()
   return { vim.fn.getreg('"', 1, true), vim.fn.getregtype('"') }
 end
 
-local ssh_clipboard = {
+-- A remote host has no desktop clipboard. Copies travel to the Mac as OSC 52;
+-- pastes read the unnamed register, since a terminal may not answer OSC 52
+-- reads.
+local terminal_clipboard = {
   name = 'OSC 52 copy, local paste',
   copy = { ['+'] = osc52.copy('+'), ['*'] = osc52.copy('*') },
   paste = { ['+'] = paste_unnamed, ['*'] = paste_unnamed },
@@ -15,7 +19,7 @@ return {
     mapleader = ' ',
     maplocalleader = ' ',
     loaded_nvim_dir_plugin = 1,
-    clipboard = vim.env.SSH_TTY and ssh_clipboard or nil,
+    clipboard = host.remote and terminal_clipboard or nil,
   },
 
   o = {

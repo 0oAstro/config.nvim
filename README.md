@@ -13,6 +13,7 @@ chezmoi in [0oAstro/dots](https://github.com/0oAstro/dots) clones this repo to `
 | `lua/spec/plugins.lua` | Plugins in load order, each with an optional `setup` and `build`. |
 | `lua/spec/languages.lua` | One entry per language: filetypes, treesitter parsers, LSP servers, formatters. |
 | `lua/spec/keymaps.lua` | Keymaps as `{ mode, lhs, rhs, desc }` rows. |
+| `lua/spec/host.lua` | One fact: whether this host is remote (Linux, or an SSH session). The clipboard and the statusline read it. |
 | `lua/spec/statusline.lua` | The statusline: one function of the window's buffer, no stored state. |
 | `nvim-pack-lock.json` | Plugin revisions, written by `vim.pack`. |
 
@@ -38,16 +39,17 @@ The config has no `plugin/` directory, no `after/` directory, and no lazy loadin
 | [neogit](https://github.com/NeogitOrg/neogit) | Git status, staging, commits, branches and log, with codediff for diffs. |
 | [codediff.nvim](https://github.com/esmuellert/codediff.nvim) | Side-by-side review of the working tree, a revision, or the history. |
 | [trouble.nvim](https://github.com/folke/trouble.nvim) | Lists for diagnostics, references, symbols and quickfix. |
-| [claudecode.nvim](https://github.com/coder/claudecode.nvim) | The Claude Code IDE protocol. Claude Code runs in its own tmux pane; `/ide` connects it, and its edits open here as diffs to accept or deny. |
+| [claudecode.nvim](https://github.com/coder/claudecode.nvim) | The Claude Code IDE protocol. Claude Code runs in its own Rex block; `/ide` connects it, and its edits open here as diffs to accept or deny. |
 | [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim) | Renders Markdown headings, tables, lists and code blocks in the buffer. |
 
 Neovim also ships `nvim.undotree` and `nvim.difftool`, which `plugins.lua` loads with `packadd`.
 
-The statusline is `lua/spec/statusline.lua`, in the style of the Pure zsh prompt that dots configures through p10k: `❮` in normal mode and `❯` in insert (red when the buffer has errors), `user@host` over SSH only, the path, the git branch with `*` for unstaged hunks, the virtualenv, then error and warning counts and the cursor position.
+The statusline is `lua/spec/statusline.lua`, in the style of the Pure zsh prompt that dots configures through p10k: `❮` in normal mode and `❯` in insert (red when the buffer has errors), `user@host` on a remote host (any Linux server, since Rex blocks there carry no SSH variables), the path, the git branch with `*` for unstaged hunks, the virtualenv, then error and warning counts and the cursor position.
 
 Built-in features cover the rest:
 - `'autoread'` watches files, so a buffer shows an agent's edit as soon as it is written.
-- The theme follows the terminal. Neovim reads the terminal background, and a terminal that reports theme changes (DEC mode 2031) switches it live.
+- The theme follows the terminal. Neovim reads Rex's background (lotus while the Mac is in light mode), and a terminal that reports theme changes (DEC mode 2031) switches it live.
+- On a remote host, yanks to `+` go to the Mac as OSC 52 through Rex.
 
 ## Common changes
 
@@ -80,7 +82,7 @@ The leader key is Space. LSP keys are Neovim's defaults: `grn` rename, `gra` cod
 | `<leader>cb` `<leader>cs` `<leader>ca` `<leader>cd` `<leader>cS` | Claude: add buffer, send selection, accept diff, deny diff, status |
 | `<leader>u` `<leader>=` `<leader>i` | Undo tree, format, inlay hints |
 
-To connect Claude Code, run `claude --ide` in a tmux pane in the same project, or `/ide` inside a running session.
+To connect Claude Code, run `claude --ide` in a Rex block in the same project, or `/ide` inside a running session.
 
 ## C++ for competitive programming
 
