@@ -16,28 +16,33 @@ vim.diagnostic.config(options.diagnostic)
 
 require('vim._core.ui2').enable({})
 
-local builds = {}
-local pack_specs = {}
-for _, plugin in ipairs(plugins) do
-  if plugin.src then
-    local spec = { src = plugin.src, version = plugin.version }
-    table.insert(pack_specs, spec)
-    builds[vim.fn.fnamemodify(plugin.src, ':t')] = plugin.build
-  end
-end
-
-vim.api.nvim_create_autocmd('PackChanged', {
-  desc = 'Run a plugin build after vim.pack installs or updates it',
-  callback = function(event)
-    local name, kind = event.data.spec.name, event.data.kind
-    local build = builds[name]
-    if build and (kind == 'install' or kind == 'update') then
-      build()
+-- The Nix package (config.nix) sets vim.g.nix and ships every plugin, built,
+-- as a start package. A plain clone in ~/.config/nvim installs them with
+-- vim.pack instead.
+if not vim.g.nix then
+  local builds = {}
+  local pack_specs = {}
+  for _, plugin in ipairs(plugins) do
+    if plugin.src then
+      local spec = { src = plugin.src, version = plugin.version }
+      table.insert(pack_specs, spec)
+      builds[vim.fn.fnamemodify(plugin.src, ':t')] = plugin.build
     end
-  end,
-})
+  end
 
-vim.pack.add(pack_specs)
+  vim.api.nvim_create_autocmd('PackChanged', {
+    desc = 'Run a plugin build after vim.pack installs or updates it',
+    callback = function(event)
+      local name, kind = event.data.spec.name, event.data.kind
+      local build = builds[name]
+      if build and (kind == 'install' or kind == 'update') then
+        build()
+      end
+    end,
+  })
+
+  vim.pack.add(pack_specs)
+end
 
 for _, plugin in ipairs(plugins) do
   if plugin.packadd then

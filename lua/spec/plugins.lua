@@ -73,7 +73,9 @@ return {
     src = gh('nvim-treesitter/nvim-treesitter'),
     version = 'main',
     setup = function()
-      require('nvim-treesitter').install(languages.parsers)
+      if not vim.g.nix then
+        require('nvim-treesitter').install(languages.parsers)
+      end
     end,
     build = function()
       vim.cmd.packadd('nvim-treesitter')

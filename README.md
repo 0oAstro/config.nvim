@@ -2,7 +2,29 @@
 
 Neovim config for Neovim nightly (0.13). Agents write most of the code and the Markdown, so this config is built for reading and reviewing their output: navigation, diffs, PR review, rendered Markdown, and LSP. Agents run beside it in Rex blocks, and Alt-h/j/k/l moves between Neovim windows and Rex blocks alike. It uses the built-in plugin manager (`vim.pack`) and the built-in LSP client.
 
-chezmoi in [0oAstro/dots](https://github.com/0oAstro/dots) clones this repo to `~/.config/nvim` and installs every binary it calls.
+The repo is also a Nix flake. Its package is Neovim nightly wrapped with this config, every plugin, all treesitter grammars, and every language server, formatter and CLI the config calls. [0oAstro/dots](https://github.com/0oAstro/dots) installs that package as `nvim`. Any machine with Nix runs it without installing anything:
+
+```sh
+nix run github:0oAstro/config.nvim
+```
+
+A plain clone in `~/.config/nvim` still works without Nix: `vim.pack` installs the plugins from `nvim-pack-lock.json`, and the binaries must be on `PATH`.
+
+## Nix and plain modes
+
+| | Nix package | Plain clone |
+| --- | --- | --- |
+| Neovim | nightly from [neovim-nightly-overlay](https://github.com/nix-community/neovim-nightly-overlay) | whatever `nvim` is on `PATH`; it must be nightly |
+| Plugins | `plugins.start` in `config.nix`, at nixpkgs' versions, built by Nix | `plugins.lua` through `vim.pack` at the `nvim-pack-lock.json` revisions |
+| Treesitter parsers | every grammar in nixpkgs | the `parsers` of `languages.lua`, compiled by nvim-treesitter |
+| Language tools | `extraBinPath` in `config.nix`, appended to `PATH` | `PATH` only |
+| State directories | `NVIM_APPNAME=mnw`: `~/.local/share/mnw`, `~/.local/state/mnw` | `~/.local/share/nvim`, `~/.local/state/nvim` |
+
+The wrapper ([mnw](https://github.com/Gerg-L/mnw)) sets `vim.g.nix = true` before `init.lua` runs. `init.lua` skips `vim.pack` and the build hooks when it is set, and the nvim-treesitter setup skips parser installs. Nothing else reads it.
+
+Plugin versions differ between the modes. nixpkgs ships blink.cmp 1.x where `vim.pack` tracks the v2 `main` branch, and blink.lib is unused in the Nix package. The rest follow nixpkgs' revisions, which are close to the lockfile but not equal to it.
+
+`nix run .#default.devMode` in a checkout at `~/Developer/config.nvim` reads `lua/` from the checkout instead of the store, so an edit there takes effect at the next start without a rebuild. `init.lua` is still read from the store; an edit to it needs `nix run .`.
 
 ## Layout
 
@@ -13,7 +35,10 @@ chezmoi in [0oAstro/dots](https://github.com/0oAstro/dots) clones this repo to `
 | `lua/spec/plugins.lua` | Plugins in load order, each with an optional `setup` and `build`. |
 | `lua/spec/languages.lua` | One entry per language: filetypes, treesitter parsers, LSP servers, formatters. |
 | `lua/spec/keymaps.lua` | Keymaps as `{ mode, lhs, rhs, desc }` rows. |
-| `nvim-pack-lock.json` | Plugin revisions, written by `vim.pack`. |
+| `nvim-pack-lock.json` | Plugin revisions for the plain clone, written by `vim.pack`. |
+| `flake.nix` | The `default` package and a dev shell with lua-language-server, stylua and nixfmt. |
+| `config.nix` | mnw's settings for the package: Neovim, plugins, grammars and `extraBinPath`. |
+| `flake.lock` | Revisions of nixpkgs, mnw and the Neovim nightly. |
 
 The config has no `plugin/` directory, no `after/` directory, and no lazy loading. Every behavior traces back to a row in a spec.
 
@@ -54,15 +79,17 @@ Built-in features cover the rest:
 
 ## Common changes
 
-Add a language: add an entry to `lua/spec/languages.lua`, then add its server and formatter binaries to `home/private_dot_config/mise/conf.d/core.toml` in dots.
+Add a language: add an entry to `lua/spec/languages.lua`, then add its server and formatter packages to `extraBinPath` in `config.nix`. The Nix package already has every grammar.
 
-Add a plugin: add a row to `lua/spec/plugins.lua` and restart with `:restart`. `vim.pack` installs it and records the revision in `nvim-pack-lock.json`.
+Add a plugin: add a row to `lua/spec/plugins.lua` and its `pkgs.vimPlugins` attribute to `plugins.start` in `config.nix`. In a plain clone, `:restart` makes `vim.pack` install it and record the revision in `nvim-pack-lock.json`; commit the lockfile.
 
-Remove a plugin: delete its row, `:restart`, then `:packdel <name>`. Commit the lockfile.
+Remove a plugin: delete its row and its `config.nix` attribute. In a plain clone, `:restart`, then `:packdel <name>`, and commit the lockfile.
 
-Update plugins: run `:packupdate`, review the diff in the tab that opens, then `:write` to accept. Commit `nvim-pack-lock.json`. On the other machine, `chezmoi update --refresh-externals` pulls the lockfile and `:packupdate ++lockfile` moves the plugins to its revisions.
+Update the Nix package: `nix flake update` here, push, then `just pins` (or `tack update nvim-config`) in dots and switch.
 
-Check the setup: `:checkhealth vim.pack vim.lsp blink.cmp conform fff octo render-markdown nvim-treesitter`.
+Update a plain clone: run `:packupdate`, review the diff in the tab that opens, then `:write` to accept. Commit `nvim-pack-lock.json`. On another plain clone, `git pull` and `:packupdate ++lockfile` move the plugins to its revisions.
+
+Check the setup: `:checkhealth vim.pack vim.lsp blink.cmp conform fff octo render-markdown nvim-treesitter`. In the Nix package, nvim-treesitter reports that its install directory is not in `runtimepath`; that is expected, since Nix supplies the parsers.
 
 ## Keys
 
@@ -91,4 +118,4 @@ Alt-h/j/k/l works across Rex because dots binds the same keys in Rex's `init.lua
 
 ## C++ for competitive programming
 
-A `.cpp` file outside a project compiles as GCC C++20, so `#include <bits/stdc++.h>` resolves in clangd. dots sets this in clangd's user config. Compile with `gcc14-g++` on Linux and `g++-16` on macOS. Apple clang has no `bits/stdc++.h`.
+A `.cpp` file outside a project compiles as GCC C++20, so `#include <bits/stdc++.h>` resolves in clangd. dots sets this in clangd's user config. The Nix package ships clangd and clang-format from nixpkgs' clang-tools. Compile with `gcc14-g++` on Linux and `g++-16` on macOS. Apple clang has no `bits/stdc++.h`.

@@ -1,7 +1,6 @@
 -- Each language names its filetypes, treesitter parsers, LSP servers (with
--- settings) and conform formatters. 0oAstro/dots installs every server and
--- formatter binary: mise for most; dnf on Linux, Xcode and Homebrew on macOS
--- for clangd and clang-format.
+-- settings) and conform formatters. The Nix package puts every server and
+-- formatter binary on PATH through extraBinPath in config.nix.
 
 local plain = {
   'toml',
