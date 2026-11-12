@@ -2,7 +2,7 @@
 
 Neovim config for Neovim nightly (0.13). Agents write most of the code and the Markdown, so this config is built for reading and reviewing their output: navigation, diffs, PR review, rendered Markdown, and LSP. Agents run beside it in Rex blocks, and Alt-h/j/k/l moves between Neovim windows and Rex blocks alike. It uses the built-in plugin manager (`vim.pack`) and the built-in LSP client.
 
-The repo is also a Nix flake. Its package is Neovim nightly wrapped with this config, every plugin, all treesitter grammars, and every language server, formatter and CLI the config calls. [0oAstro/dots](https://github.com/0oAstro/dots) installs that package as `nvim`. Any machine with Nix runs it without installing anything:
+The repo is also a Nix flake. Its package is Neovim nightly wrapped with this config, every plugin, all treesitter grammars, and every language server, formatter and CLI the config calls. `lib.mkNeovim pkgs` builds it from any nixpkgs package set; [0oAstro/dots](https://github.com/0oAstro/dots) calls it with its own `pkgs`, so its overlays and pins apply, and installs the result as `nvim`. The `default` package is `lib.mkNeovim` applied to this flake's nixpkgs. Any machine with Nix runs it without installing anything:
 
 ```sh
 nix run github:0oAstro/config.nvim
@@ -36,7 +36,7 @@ Plugin versions differ between the modes. nixpkgs ships blink.cmp 1.x where `vim
 | `lua/spec/languages.lua` | One entry per language: filetypes, treesitter parsers, LSP servers, formatters. |
 | `lua/spec/keymaps.lua` | Keymaps as `{ mode, lhs, rhs, desc }` rows. |
 | `nvim-pack-lock.json` | Plugin revisions for the plain clone, written by `vim.pack`. |
-| `flake.nix` | The `default` package and a dev shell with lua-language-server, stylua and nixfmt. |
+| `flake.nix` | `lib.mkNeovim`, which builds the package from a given `pkgs`; the `default` package, built from this flake's nixpkgs; and a dev shell with lua-language-server, stylua and nixfmt. |
 | `config.nix` | mnw's settings for the package: Neovim, plugins, grammars and `extraBinPath`. |
 | `flake.lock` | Revisions of nixpkgs, mnw and the Neovim nightly. |
 
@@ -118,4 +118,4 @@ Alt-h/j/k/l works across Rex because dots binds the same keys in Rex's `init.lua
 
 ## C++ for competitive programming
 
-A `.cpp` file outside a project compiles as GCC C++20, so `#include <bits/stdc++.h>` resolves in clangd. dots sets this in clangd's user config. The Nix package ships clangd and clang-format from nixpkgs' clang-tools. Compile with `gcc14-g++` on Linux and `g++-16` on macOS. Apple clang has no `bits/stdc++.h`.
+A `.cpp` file outside a project compiles as GCC C++20, so `#include <bits/stdc++.h>` resolves in clangd. dots sets this in clangd's user config, with nixpkgs' GCC 14 `g++` as the compiler on every host, and clangd queries it through `--query-driver=/nix/store/*-gcc-wrapper-*/bin/g++`. The Nix package ships clangd and clang-format from nixpkgs' clang-tools. Compile with that `g++`; Apple clang has no `bits/stdc++.h`.

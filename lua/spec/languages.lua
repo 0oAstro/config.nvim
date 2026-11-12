@@ -62,7 +62,7 @@ local languages = {
     parsers = { 'c', 'cpp' },
     servers = {
       clangd = {
-        cmd = { 'clangd', '--query-driver=/usr/bin/gcc14-g++,/opt/homebrew/bin/g++-*' },
+        cmd = { 'clangd', '--query-driver=/nix/store/*-gcc-wrapper-*/bin/g++' },
       },
     },
     formatters = { 'clang-format' },

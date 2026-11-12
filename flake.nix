@@ -12,6 +12,7 @@
 
   outputs =
     {
+      self,
       nixpkgs,
       mnw,
       neovim-nightly-overlay,
@@ -27,11 +28,15 @@
       eachSystem = f: nixpkgs.lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
     in
     {
-      packages = eachSystem (pkgs: {
-        default = mnw.lib.wrap {
+      lib.mkNeovim =
+        pkgs:
+        mnw.lib.wrap {
           inherit pkgs;
           neovim-nightly = neovim-nightly-overlay.packages.${pkgs.stdenv.hostPlatform.system}.default;
         } ./config.nix;
+
+      packages = eachSystem (pkgs: {
+        default = self.lib.mkNeovim pkgs;
       });
 
       devShells = eachSystem (pkgs: {
