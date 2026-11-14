@@ -20,7 +20,8 @@ nix run github:0oAstro/config.nvim
 | `modules/languages.nix` | Language servers and their settings, formatters by filetype, and the language tool environment. |
 | `modules/plugins.nix` | Every plugin with its settings and its lz.n trigger. |
 | `modules/keymaps.nix` | Keymaps; keys of lazy plugins go through lz.n. |
-| `flake.lock` | Revisions of nixpkgs, nixvim, the Neovim nightly and Flexoki. |
+| `flake.lock` | Revisions of nixpkgs, nixvim, the Neovim nightly, Flexoki and the CodeDiff watcher source. |
+| `pkgs/codediff-watcher.nix` | Builds upstream CodeDiff v0.23.2's watcher binary from Rust source. |
 
 ## Startup
 
@@ -58,6 +59,8 @@ Measure startup on aardvark with `hyperfine -N -w 5 -r 60 'result/bin/nvim --hea
 | [flash.nvim](https://github.com/folke/flash.nvim) | `s` `S` | Jump to any visible spot with `s` and a label; `S` selects a treesitter node. |
 | [quicker.nvim](https://github.com/stevearc/quicker.nvim) | start | A cleaner quickfix list that you can edit to change the matched lines. |
 | [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim) | Markdown files | Renders Markdown headings, tables, lists and code blocks in the buffer. |
+
+CodeDiff's file watcher is built from the matching upstream v0.23.2 source and included in `nvim-cli-tools`. The plugin finds `codediff-watcher` on PATH through its native lookup; it does not download a release into the read-only store. nixpkgs master has no watcher package or codediff-nvim watcher override.
 
 Neovim also ships `nvim.undotree` and `nvim.difftool`, which load on `:Undotree` and `:DiffTool`.
 

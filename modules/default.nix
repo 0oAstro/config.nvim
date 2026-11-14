@@ -1,5 +1,6 @@
 {
   config,
+  codediff-src,
   lib,
   neovim-nightly,
   pkgs,
@@ -66,6 +67,7 @@
         ripgrep
         fd
         fzf
+        (callPackage ../pkgs/codediff-watcher.nix { src = codediff-src; })
       ];
     })
   ];

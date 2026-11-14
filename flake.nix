@@ -11,6 +11,10 @@
       url = "github:nix-community/neovim-nightly-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    codediff-src = {
+      url = "github:esmuellert/codediff/v0.23.2";
+      flake = false;
+    };
     flexoki-neovim = {
       url = "github:kepano/flexoki-neovim";
       flake = false;
@@ -24,6 +28,7 @@
       nixvim,
       neovim-nightly-overlay,
       flexoki-neovim,
+      codediff-src,
       ...
     }:
     let
@@ -47,7 +52,7 @@
           ];
           extraSpecialArgs = {
             neovim-nightly = neovim-nightly-overlay.packages.${pkgs.stdenv.hostPlatform.system}.default;
-            inherit flexoki-neovim;
+            inherit flexoki-neovim codediff-src;
           };
         };
 

@@ -1,5 +1,22 @@
 {
   "nodes": {
+    "codediff-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1788759357,
+        "narHash": "sha256-YiDCNp5buIYQhnquC/1hjLGBjGtzSMu6BAgHtcYCt5o=",
+        "owner": "esmuellert",
+        "repo": "codediff",
+        "rev": "9006710244fc4f13cd6779a48f2387aa7235c23e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "esmuellert",
+        "ref": "v0.23.2",
+        "repo": "codediff",
+        "type": "github"
+      }
+    },
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": [
@@ -136,6 +153,7 @@
     },
     "root": {
       "inputs": {
+        "codediff-src": "codediff-src",
         "flexoki-neovim": "flexoki-neovim",
         "neovim-nightly-overlay": "neovim-nightly-overlay",
         "nixpkgs": "nixpkgs",
