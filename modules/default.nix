@@ -67,6 +67,7 @@
         ripgrep
         fd
         fzf
+        pi-coding-agent
         (callPackage ../pkgs/codediff-watcher.nix { src = codediff-src; })
       ];
     })

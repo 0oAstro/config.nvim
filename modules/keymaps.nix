@@ -81,6 +81,11 @@ in
   ];
 
   plugins.lz-n.keymaps = [
+    (lazy "ninety-nine" "n" "<leader>9s" "<Cmd>NinetyNineSearch<CR>" "99 search")
+    (lazy "ninety-nine" "x" "<leader>9v" (call "require('99').visual()") "99 replace selection")
+    (lazy "ninety-nine" "n" "<leader>9x" (call "require('99').stop_all_requests()") "99 stop requests")
+    (lazy "ninety-nine" "n" "<leader>9w" "<Cmd>NinetyNineWorkSearch<CR>" "Search for remaining 99 work")
+
     (lazy "fff" "n" "<leader>f" (fff "find_files") "Find files")
     (lazy "fff" "n" "<leader>/" (fff "live_grep") "Grep project")
     (lazy "fff" nx "<leader>*" (fff "live_grep_under_cursor") "Grep word or selection")

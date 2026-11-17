@@ -15,6 +15,10 @@
       url = "github:esmuellert/codediff/v0.23.2";
       flake = false;
     };
+    ninety-nine = {
+      url = "github:ThePrimeagen/99";
+      flake = false;
+    };
     flexoki-neovim = {
       url = "github:kepano/flexoki-neovim";
       flake = false;
@@ -29,6 +33,7 @@
       neovim-nightly-overlay,
       flexoki-neovim,
       codediff-src,
+      ninety-nine,
       ...
     }:
     let
@@ -52,7 +57,7 @@
           ];
           extraSpecialArgs = {
             neovim-nightly = neovim-nightly-overlay.packages.${pkgs.stdenv.hostPlatform.system}.default;
-            inherit flexoki-neovim codediff-src;
+            inherit flexoki-neovim codediff-src ninety-nine;
           };
         };
 

@@ -20,7 +20,7 @@ nix run github:0oAstro/config.nvim
 | `modules/languages.nix` | Language servers and their settings, formatters by filetype, and the language tool environment. |
 | `modules/plugins.nix` | Every plugin with its settings and its lz.n trigger. |
 | `modules/keymaps.nix` | Keymaps; keys of lazy plugins go through lz.n. |
-| `flake.lock` | Revisions of nixpkgs, nixvim, the Neovim nightly, Flexoki and the CodeDiff watcher source. |
+| `flake.lock` | Revisions of nixpkgs, nixvim, the Neovim nightly, Flexoki, 99 and the CodeDiff watcher source. |
 | `pkgs/codediff-watcher.nix` | Builds upstream CodeDiff v0.23.2's watcher binary from Rust source. |
 
 ## Startup
@@ -57,10 +57,15 @@ Measure startup on aardvark with `hyperfine -N -w 5 -r 60 'result/bin/nvim --hea
 | [octo.nvim](https://github.com/pwntester/octo.nvim) | `:Octo` | GitHub pull requests and issues: read the diff, comment, review, approve. Uses the `gh` login. |
 | [todo-comments.nvim](https://github.com/folke/todo-comments.nvim) | after first draw, its keys | Highlights and lists TODO, FIXME, HACK and NOTE comments. |
 | [flash.nvim](https://github.com/folke/flash.nvim) | `s` `S` | Jump to any visible spot with `s` and a label; `S` selects a treesitter node. |
+| [99](https://github.com/ThePrimeagen/99) | its keys, `:NinetyNineSearch`, `:NinetyNineWork`, `:NinetyNineWorkSearch` | Pi-backed code search to quickfix, visual replacement, and Worker search. |
 | [quicker.nvim](https://github.com/stevearc/quicker.nvim) | start | A cleaner quickfix list that you can edit to change the matched lines. |
 | [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim) | Markdown files | Renders Markdown headings, tables, lists and code blocks in the buffer. |
 
 CodeDiff's file watcher is built from the matching upstream v0.23.2 source and included in `nvim-cli-tools`. The plugin finds `codediff-watcher` on PATH through its native lookup; it does not download a release into the read-only store. nixpkgs master has no watcher package or codediff-nvim watcher override.
+
+99 runs Pi (from `nvim-cli-tools`) in print mode with `azure/gpt-6.2-sol` at medium effort. It uses your Pi model configuration and credentials, but no saved Pi session, context files, extensions, or MCP. Search, Worker search, and visual replacement use `read,grep,find,ls,write`. Pi is instructed to write only 99's response file; its write tool is not sandboxed, and Worker cannot run Git or tests. Prompts and project context go to the model; 99 keeps request files and Worker state under Neovim's cache directory (`99/<cwd-hash>/`) and writes a debug log (which can include prompts and source) under its state directory (`99/<cwd-hash>/99.log`).
+
+Submit a 99 prompt with `:w`. Use `:NinetyNineWork` to set a work item before searching for remaining work.
 
 Neovim also ships `nvim.undotree` and `nvim.difftool`, which load on `:Undotree` and `:DiffTool`.
 
@@ -92,7 +97,7 @@ Formatters without an entry fall back to the server's formatting.
 
 Add a language: add its server to `lsp.servers` and its formatters to `formatters_by_ft` in `modules/languages.nix`, and its packages to the `nvim-language-tools` environment there. The package already has every grammar.
 
-Add a plugin: enable its nixvim module (`plugins.<name>`) in `modules/plugins.nix` with its settings and an lz.n trigger, and its keys in `modules/keymaps.nix`. A plugin nixvim lacks goes in `extraPlugins`, built from a flake input.
+Add a plugin: enable its nixvim module (`plugins.<name>`) in `modules/plugins.nix` with its settings and an lz.n trigger, and its keys in `modules/keymaps.nix`. A plugin nixvim lacks is built from a flake input and goes in `extraPlugins`, directly or through nixvim's generic plugin builder.
 
 Update: `nix flake update` here, build, check the startup gate and the smoke steps in AGENTS.md, push, then `nix run .#tack -- update nvim-config` in dots and switch.
 
@@ -117,6 +122,7 @@ The leader key is Space. LSP keys are Neovim's defaults: `grn` rename, `gra` cod
 | `]t` `[t` `<leader>xt` | Next and previous TODO, TODO list |
 | `<leader>gP` `<leader>gI` `<leader>gR` | GitHub pull requests, issues, review the current PR (octo) |
 | `gsa` `gsd` `gsr` | Add, delete, replace surrounding characters |
+| `<leader>9s` `<leader>9v` (visual) `<leader>9x` `<leader>9w` | 99: search, replace selection, stop requests, search for remaining work |
 | `<leader>u` `<leader>=` `<leader>i` | Undo tree, format, inlay hints |
 
 Alt-h/j/k/l works across Rex because dots binds the same keys in Rex's configuration. A Rex block running Neovim gets the key; any other block moves Rex focus. Opening Neovim with no file shows the start screen: find, grep, recent files, Neogit, diff and the file tree, one key each.

@@ -113,6 +113,22 @@
         "type": "github"
       }
     },
+    "ninety-nine": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1781229584,
+        "narHash": "sha256-iilpiG81kHIv7Y0qvPzZOanNA0lsPotlB18cvtmTy0o=",
+        "owner": "ThePrimeagen",
+        "repo": "99",
+        "rev": "c17422457027c913c76c75a921fca1e623d2678e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ThePrimeagen",
+        "repo": "99",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1793977579,
@@ -156,6 +172,7 @@
         "codediff-src": "codediff-src",
         "flexoki-neovim": "flexoki-neovim",
         "neovim-nightly-overlay": "neovim-nightly-overlay",
+        "ninety-nine": "ninety-nine",
         "nixpkgs": "nixpkgs",
         "nixvim": "nixvim"
       }

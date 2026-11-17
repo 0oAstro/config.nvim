@@ -7,6 +7,7 @@
 {
   config,
   flexoki-neovim,
+  ninety-nine,
   lib,
   pkgs,
   ...
@@ -21,8 +22,27 @@ let
     "x"
     "o"
   ];
+  # 99 needs real directories for its reply files, Worker state and logs.
+  privateProjectDir = kind: ''
+    (function()
+      local dir = vim.fs.joinpath(vim.fn.stdpath('${kind}'), '99', vim.fn.sha256(vim.fn.getcwd()))
+      vim.fn.mkdir(dir, 'p', 448) -- 0700
+      return dir
+    end)()
+  '';
 in
 {
+  # Pinned nixvim has no 99 module. Its generic builder puts the package in
+  # extraPlugins and generates setup and the lz.n spec just like other plugins.
+  imports = [
+    (lib.nixvim.plugins.mkNeovimPlugin {
+      name = "ninety-nine";
+      moduleName = "99";
+      maintainers = [ ];
+      url = "https://github.com/ThePrimeagen/99";
+    })
+  ];
+
   plugins.lz-n.enable = true;
 
   # Flexoki follows 'background'. Neovim asks the terminal for its background
@@ -176,6 +196,16 @@ in
           mode = "n";
           keys = "gs";
           desc = "+surround";
+        }
+        {
+          mode = "n";
+          keys = "<Leader>9";
+          desc = "+99 agent";
+        }
+        {
+          mode = "x";
+          keys = "<Leader>9";
+          desc = "+99 agent";
         }
       ];
       window.delay = 300;
@@ -379,6 +409,61 @@ in
     enable = true;
     settings.latex.enabled = false;
     lazyLoad.settings.ft = "markdown";
+  };
+
+  plugins.ninety-nine = {
+    enable = true;
+    package = pkgs.vimUtils.buildVimPlugin {
+      pname = "ninety-nine";
+      version = ninety-nine.lastModifiedDate;
+      src = ninety-nine;
+      # Upstream doesn't load this module; it imports a file upstream removed.
+      nvimSkipModules = [ "99.editor.lsp" ];
+    };
+    lazyLoad.settings.cmd = [
+      "NinetyNineSearch"
+      "NinetyNineWork"
+      "NinetyNineWorkSearch"
+    ];
+    settings = {
+      # Nixvim has no option for a Pi provider; implement 99's BaseProvider contract.
+      provider = mkRaw ''
+        setmetatable({
+          _get_provider_name = function() return 'PiProvider' end,
+          _get_default_model = function() return 'azure/gpt-6.2-sol' end,
+          _build_command = function(_, query, context)
+            local instruction = "\nUse Pi's write tool to save only the requested output to "
+              .. context.tmp_file .. ". Never write to any other file."
+            return {
+              'pi', '-p', '--no-session', '--no-context-files',
+              '--no-extensions', '--no-mcp', '--no-skills', '--no-prompt-templates',
+              '--model', context.model, '--thinking', 'medium',
+              '--tools', 'read,grep,find,ls,write', '--', query .. instruction,
+            }
+          end,
+        }, { __index = require('99').Providers.BaseProvider })
+      '';
+      # Pi can write outside the project without Claude/OpenCode's permission prompts.
+      tmp_dir = mkRaw (privateProjectDir "cache");
+      logger = {
+        type = "file";
+        path = mkRaw "${privateProjectDir "state"} .. '/99.log'";
+        level = mkRaw "require('99').DEBUG";
+      };
+    };
+
+    # 99 only exports Lua functions. Install the real commands when lz.n
+    # releases its command stubs, rather than registering them in startup Lua.
+    luaConfig.content = lib.mkAfter ''
+      local agent = require('99')
+      local worker = agent.Extensions.Worker
+      vim.api.nvim_create_user_command('NinetyNineSearch', function() agent.search() end,
+        { desc = '99 search' })
+      vim.api.nvim_create_user_command('NinetyNineWork', function() worker.set_work() end,
+        { desc = 'Set 99 work item' })
+      vim.api.nvim_create_user_command('NinetyNineWorkSearch', function() worker.search() end,
+        { desc = 'Search for remaining 99 work' })
+    '';
   };
 
   # Optional packages that ship with Neovim.
